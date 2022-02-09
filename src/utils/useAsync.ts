@@ -7,11 +7,16 @@ interface State<D = null> {
 }
 
 const defaultInitialState: State<null> = {
+    stat: 'idle',
     error: null,
     data: null,
-    stat: 'idle',
 }
-export const useAsync = <D>(initialState?: State<D>) => {
+
+const defaultThrowOnError = {
+    throwOnError: false
+}
+
+export const useAsync = <D>(initialState?: State<D>, initialThrowOnError?: typeof defaultThrowOnError) => {
     const [state, setState] = useState({
         ...defaultInitialState,
         ...initialState,
@@ -19,23 +24,23 @@ export const useAsync = <D>(initialState?: State<D>) => {
 
     const setData = (data: D) => {
         setState({
-            error: null,
             data,
             stat: 'success',
+            error: null,
         })
     }
 
     const setError = (error: Error) => {
         setState({
             error,
-            data: null,
             stat: 'error',
+            data: null,
         })
     }
 
     const run = (promise: Promise<D>) => {
         if (!promise || !promise.then) {
-            throw new Error('请传入 Promise 类型')
+            throw new Error('请传入 Promise 类型数据')
         }
         setState({ ...state, stat: 'loading' })
         return promise
@@ -43,9 +48,10 @@ export const useAsync = <D>(initialState?: State<D>) => {
                 setData(data)
                 return data
             })
-            .catch((err) => {
-                setError(err)
-                return Promise.reject(err)
+            .catch((error) => {
+                setError(error)
+                if(initialThrowOnError?.throwOnError) return Promise.reject(error)
+                return error
             })
     }
 
@@ -57,6 +63,6 @@ export const useAsync = <D>(initialState?: State<D>) => {
         setData,
         setError,
         run,
-        ...state,
+        ...state
     }
 }

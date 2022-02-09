@@ -1,14 +1,19 @@
-import { Link, Route, Routes } from "react-router-dom"
-import { EpicScreen } from "screens/epic"
-import { KanbanScreen } from "screens/kanban"
+import { Route, Routes } from 'react-router'
+import { Link } from 'react-router-dom'
+import { EpicScreen } from 'screens/epic/Index'
+import { KanbanScreen } from 'screens/kanban/Index'
 
 export const ProjectScreen = () => {
-    return <div>
-        <Link to="kanban">看板</Link>
-        <Link to="epic">任务组</Link>
-        <Routes>
-            <Route path="/kanban" element={<KanbanScreen />}/>
-            <Route path="/epic" element={<EpicScreen />}/>
-        </Routes>
-    </div>
+    return (
+        <div>
+            <h1>ProjectScreen</h1>
+            <Link to={'Kanban'}>看板</Link>
+            <Link to={'Epic'}>任务栏</Link>
+            <Routes>
+                <Route path={'Kanban'} element={<KanbanScreen />} />
+                <Route path={'Epic'} element={<EpicScreen />} />
+                <Route index element={<KanbanScreen />} />
+            </Routes>
+        </div>
+    )
 }

@@ -1,8 +1,8 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
-import { IUsers } from '../screens/project-list'
-import * as auth from '../AuthProvider'
-import { http } from '../utils/http'
-import { useMount } from '../utils'
+import React, { ReactNode, useContext } from 'react'
+import { User } from 'screens/projectList/Index'
+import * as auth from 'AuthProvider'
+import { http } from 'utils/http'
+import { useMount } from 'utils/index'
 import { useAsync } from 'utils/useAsync'
 import { FullPageErrorFallback, FullPageLoading } from 'components/libs'
 
@@ -21,27 +21,29 @@ const bootstrapUser = async () => {
     return user
 }
 
-const AuthContext = createContext<
+const AuthContext = React.createContext<
     | {
-          user: IUsers | null
+          user: User | null
           login: (form: AuthForm) => Promise<void>
           register: (form: AuthForm) => Promise<void>
           logout: () => Promise<void>
       }
     | undefined
 >(undefined)
+AuthContext.displayName = 'AuthContext'
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const {data: user, isIdle, isLoading, isError, run, setData: setUser, error } = useAsync<IUsers | null>()
+    // const [user, setUser] = useState<User | null>(null)
+    
+    const {data: user, isIdle, isLoading, isError, run, setData: setUser, error } = useAsync<User | null>()
     const login = (form: AuthForm) => auth.login(form).then(setUser)
     const register = (form: AuthForm) => auth.register(form).then(setUser)
     const logout = () => auth.logout().then(() => setUser(null))
 
-    useMount(async () => {
-        const newUser = await bootstrapUser()
-        if (newUser) setUser(newUser)
+    useMount(() => {
+        run(bootstrapUser())
     })
-    
+
     if(isIdle || isLoading) {
         return <FullPageLoading />
     }
@@ -50,16 +52,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return <FullPageErrorFallback error={error}/>
     }
     return (
-        <AuthContext.Provider value={{ user, login, register, logout }}>
-            {children}
-        </AuthContext.Provider>
+        <AuthContext.Provider
+            value={{ user, login, register, logout }}
+            children={children}
+        ></AuthContext.Provider>
     )
 }
 
 export const useAuth = () => {
     const context = useContext(AuthContext)
     if (!context) {
-        throw new Error('请在 AuthProvider 中使用 useAuth')
+        throw new Error('useAuth 必须在 AuthProvider 中使用')
     }
     return context
 }

@@ -1,20 +1,18 @@
-import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
-import { AuthenticatedApp } from './authenticated-app'
-import { useAuth } from './context/AuthContext'
-import UnauthenticatedApp from './screens/unauthenticated-app'
+import { useAuth } from 'context/AuthContext'
+import { AuthenticatedApp } from 'AuthenticatedApp'
+import { UnauthenticatedApp } from 'unauthenticatedApp/Index'
+import ErrorBoundary from 'antd/lib/alert/ErrorBoundary'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 function App() {
     const { user } = useAuth()
     return (
         <div className="App">
             <Router>
-                {user ? (
-                    <AuthenticatedApp></AuthenticatedApp>
-                ) : (
-                    <UnauthenticatedApp></UnauthenticatedApp>
-                )}
+                <ErrorBoundary>
+                    {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+                </ErrorBoundary>
             </Router>
         </div>
     )
