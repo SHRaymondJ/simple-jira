@@ -6,7 +6,6 @@ import styled from '@emotion/styled'
 import { Typography } from 'antd'
 import { useProjects } from 'utils/useProjects'
 import { useUsers } from 'utils/useUsers'
-import { useUrlQueryParams } from 'utils/url'
 import { useProjectSearchParams } from './utils'
 export interface User {
     id: number
@@ -19,6 +18,7 @@ export interface Project {
     personId: number
     organization: string
     created: number
+    pin: boolean
 }
 
 export const ProjectListScreen = () => {
@@ -26,7 +26,7 @@ export const ProjectListScreen = () => {
 
     // 基本类型，可以放到依赖里，组件状态，可以放到依赖里，非组件状态的对象，绝对不能放到依赖里
     const [param, setParam] = useProjectSearchParams()
-    const { isLoading, error, data: list } = useProjects(useDebounce(param, 200))
+    const { isLoading, error, data: list, retry } = useProjects(useDebounce(param, 200))
     const { data: users } = useUsers()
 
     return (
@@ -43,6 +43,7 @@ export const ProjectListScreen = () => {
                 </Typography.Text>
             ) : null}
             <List
+                refresh={retry}
                 dataSource={list || []}
                 users={users || []}
                 loading={isLoading}

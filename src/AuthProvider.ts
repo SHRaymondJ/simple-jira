@@ -7,6 +7,7 @@ export const getToken = () => window.localStorage.getItem(localStorageKey)
 
 export const handleUserResponse = ({ user }: { user: User }) => {
     window.localStorage.setItem(localStorageKey, user.token || '')
+    window.location.search = ''
     return user
 }
 

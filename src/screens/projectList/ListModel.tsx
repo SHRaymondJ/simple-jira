@@ -1,23 +1,43 @@
 import { Table, TableProps } from 'antd'
+import { Pin } from 'components/pin'
 import dayjs from 'dayjs'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useEditProjects } from 'utils/useProjects'
 import { Project, User } from './Index'
 
-interface ListProps extends TableProps<Project>{
+interface ListProps extends TableProps<Project> {
     users: User[]
+    refresh?:() => void
 }
 
 const List = ({ users, ...props }: ListProps) => {
+    const { mutate } = useEditProjects()
+    const pinProject = (id: number) => (pin: boolean) => mutate({ id, pin }).then(props.refresh)
     const columns = [
+        {
+            title: <Pin checked={true} disabled={true} />,
+            render(value: any, project: Project) {
+                return (
+                    <Pin
+                        checked={project.pin}
+                        onCheckedChange={pinProject(project.id)}
+                    />
+                )
+            },
+        },
         {
             title: '名称',
             dataIndex: 'name',
             rowKey: 'name',
             sorter: (a: Project, b: Project) => a.name.localeCompare(b.name),
             render(value: any, project: Project) {
-                return <Link to={`projects/${String(project.id)}`}>{project.name}</Link>
-            }
+                return (
+                    <Link to={`projects/${String(project.id)}`}>
+                        {project.name}
+                    </Link>
+                )
+            },
         },
         {
             title: '小组',
@@ -32,8 +52,9 @@ const List = ({ users, ...props }: ListProps) => {
                 return (
                     <span>
                         {
-                            users.find((user) => user.id === Number(project.personId))
-                                ?.name
+                            users.find(
+                                (user) => user.id === Number(project.personId)
+                            )?.name
                         }
                     </span>
                 )
