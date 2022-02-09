@@ -1,4 +1,5 @@
-import { Table, TableProps } from 'antd'
+import { Button, Dropdown, Menu, Popover, Table, TableProps } from 'antd'
+import { ButtonNoPadding } from 'components/libs'
 import { Pin } from 'components/pin'
 import dayjs from 'dayjs'
 import React from 'react'
@@ -8,12 +9,14 @@ import { Project, User } from './Index'
 
 interface ListProps extends TableProps<Project> {
     users: User[]
-    refresh?:() => void
+    refresh?: () => void
+    openProjectModal?: () => void
 }
 
 const List = ({ users, ...props }: ListProps) => {
     const { mutate } = useEditProjects()
-    const pinProject = (id: number) => (pin: boolean) => mutate({ id, pin }).then(props.refresh)
+    const pinProject = (id: number) => (pin: boolean) =>
+        mutate({ id, pin }).then(props.refresh)
     const columns = [
         {
             title: <Pin checked={true} disabled={true} />,
@@ -72,6 +75,20 @@ const List = ({ users, ...props }: ListProps) => {
                             ? dayjs(project.created).format('YYYY-MM-DD')
                             : '无'}
                     </span>
+                )
+            },
+        },
+        {
+            title: '操作',
+            render(value: any, project: Project) {
+                return (
+                    <Dropdown overlay={<Menu>
+                        <Menu.Item key={'edit'}>
+                            <ButtonNoPadding type='link' onClick={props.openProjectModal}>编辑</ButtonNoPadding>
+                        </Menu.Item>
+                    </Menu>}>
+                        <ButtonNoPadding type="link">...</ButtonNoPadding>
+                    </Dropdown>
                 )
             },
         },
