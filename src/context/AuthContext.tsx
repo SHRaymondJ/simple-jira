@@ -5,6 +5,7 @@ import { http } from 'utils/http'
 import { useMount } from 'utils/index'
 import { useAsync } from 'utils/useAsync'
 import { FullPageErrorFallback, FullPageLoading } from 'components/libs'
+import { useCallback } from 'react'
 
 interface AuthForm {
     username: string
@@ -33,23 +34,31 @@ const AuthContext = React.createContext<
 AuthContext.displayName = 'AuthContext'
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    // const [user, setUser] = useState<User | null>(null)
-    
-    const {data: user, isIdle, isLoading, isError, run, setData: setUser, error } = useAsync<User | null>()
+    const {
+        data: user,
+        isIdle,
+        isLoading,
+        isError,
+        run,
+        setData: setUser,
+        error,
+    } = useAsync<User | null>()
     const login = (form: AuthForm) => auth.login(form).then(setUser)
     const register = (form: AuthForm) => auth.register(form).then(setUser)
     const logout = () => auth.logout().then(() => setUser(null))
 
-    useMount(() => {
-        run(bootstrapUser())
-    })
+    useMount(
+        useCallback(() => {
+            run(bootstrapUser())
+        }, [run])
+    )
 
-    if(isIdle || isLoading) {
+    if (isIdle || isLoading) {
         return <FullPageLoading />
     }
 
-    if(isError) {
-        return <FullPageErrorFallback error={error}/>
+    if (isError) {
+        return <FullPageErrorFallback error={error} />
     }
     return (
         <AuthContext.Provider

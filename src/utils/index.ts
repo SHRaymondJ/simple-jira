@@ -22,8 +22,7 @@ export const useMount = (callback: () => void) => {
     return useEffect(
         () => callback(),
         // TODO 依赖项里加上callback会造成无限循环， 这个和useCallback 以及 useMemo 有关系
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [callback]
     )
 }
 

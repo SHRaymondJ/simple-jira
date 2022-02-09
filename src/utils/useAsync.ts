@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useMountedRef } from 'utils'
 
 interface State<D = null> {
@@ -28,47 +28,47 @@ export const useAsync = <D>(
     // useState 设置函数的话，需要使用回调，因为useState(()=>{}) 已经被用作 惰性加载
     const [retry, setRetry] = useState(() => () => {})
     const mountedRef = useMountedRef()
-    const setData = (data: D) => {
+    const setData = useCallback((data: D) => {
         setState({
             data,
             stat: 'success',
             error: null,
         })
-    }
+    }, [])
 
-    const setError = (error: Error) => {
+    const setError = useCallback((error: Error) => {
         setState({
             error,
             stat: 'error',
             data: null,
         })
-    }
+    }, [])
 
-    const run = (
-        promise: Promise<D>,
-        runConfig?: { retry: () => Promise<D> }
-    ) => {
-        if (!promise || !promise.then) {
-            throw new Error('请传入 Promise 类型数据')
-        }
-        setRetry(() => () => {
-            if (runConfig?.retry) {
-                run(runConfig?.retry(), runConfig)
+    const run = useCallback(
+        (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+            if (!promise || !promise.then) {
+                throw new Error('请传入 Promise 类型数据')
             }
-        })
-        setState({ ...state, stat: 'loading' })
-        return promise
-            .then((data) => {
-                if (mountedRef.current) setData(data)
-                return data
+            setRetry(() => () => {
+                if (runConfig?.retry) {
+                    run(runConfig?.retry(), runConfig)
+                }
             })
-            .catch((error) => {
-                setError(error)
-                if (initialThrowOnError?.throwOnError)
-                    return Promise.reject(error)
-                return error
-            })
-    }
+            setState((prevState) => ({ ...prevState, stat: 'loading' }))
+            return promise
+                .then((data) => {
+                    if (mountedRef.current) setData(data)
+                    return data
+                })
+                .catch((error) => {
+                    setError(error)
+                    if (initialThrowOnError?.throwOnError)
+                        return Promise.reject(error)
+                    return error
+                })
+        },
+        [initialThrowOnError?.throwOnError, mountedRef, setData, setError]
+    )
 
     return {
         isLoading: state.stat === 'loading',
