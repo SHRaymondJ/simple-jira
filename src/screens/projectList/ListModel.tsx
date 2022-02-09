@@ -6,7 +6,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useEditProjects } from 'utils/useProjects'
 import { Project, User } from './Index'
-
+import {useDispatch} from 'react-redux'
+import { projectListActions } from './ProjectListSlice'
 interface ListProps extends TableProps<Project> {
     users: User[]
     refresh?: () => void
@@ -15,6 +16,7 @@ interface ListProps extends TableProps<Project> {
 
 const List = ({ users, ...props }: ListProps) => {
     const { mutate } = useEditProjects()
+    const dispatch = useDispatch()
     const pinProject = (id: number) => (pin: boolean) =>
         mutate({ id, pin }).then(props.refresh)
     const columns = [
@@ -84,7 +86,7 @@ const List = ({ users, ...props }: ListProps) => {
                 return (
                     <Dropdown overlay={<Menu>
                         <Menu.Item key={'edit'}>
-                            <ButtonNoPadding type='link' onClick={props.openProjectModal}>编辑</ButtonNoPadding>
+                            <ButtonNoPadding type='link' onClick={() => dispatch(projectListActions.openProjectModal())}>编辑</ButtonNoPadding>
                         </Menu.Item>
                     </Menu>}>
                         <ButtonNoPadding type="link">...</ButtonNoPadding>

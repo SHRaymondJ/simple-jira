@@ -10,38 +10,35 @@ import { resetRoute } from 'utils'
 import { useState } from 'react'
 import { ProjectModal } from 'screens/projectList/ProjectModal'
 import { ProjectPopover } from 'components/ProjectPopOver'
+import { useDispatch } from 'react-redux'
 
 export const AuthenticatedApp = () => {
-    const [projectModalOpen, setProjectModalOpen] = useState(false)
     return (
         <Container>
-            <PageHeader openProjectModal={()=>setProjectModalOpen(true)}/>
-            <ProjectModal
-                projectModalOpen={projectModalOpen}
-                onClose={() => setProjectModalOpen(false)}
-            />
+            <PageHeader />
+            <ProjectModal />
             <Main>
                 <Routes>
-                    <Route path={'/projects'} element={<ProjectListScreen openProjectModal={()=>setProjectModalOpen(true)}/>} />
+                    <Route path={'/projects'} element={<ProjectListScreen />} />
                     <Route
                         path={'/projects/:projectId/*'}
                         element={<ProjectScreen />}
                     />
-                    <Route index element={<ProjectListScreen openProjectModal={()=>setProjectModalOpen(true)}/>} />
+                    <Route index element={<ProjectListScreen />} />
                 </Routes>
             </Main>
         </Container>
     )
 }
 
-const PageHeader = (props: {openProjectModal: () => void}) => {
+const PageHeader = () => {
     return (
         <Header between={true}>
             <HeaderLeft gap={true}>
                 <ButtonNoPadding type={'link'} onClick={resetRoute}>
                     <SoftwareLogo width={'18rem'} color={'rgb(38,132,255)'} />
                 </ButtonNoPadding>
-                <ProjectPopover openProjectModal={props.openProjectModal}/>
+                <ProjectPopover />
                 <span>用户</span>
             </HeaderLeft>
             <HeaderRight>

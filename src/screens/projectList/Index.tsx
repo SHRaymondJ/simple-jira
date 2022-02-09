@@ -8,6 +8,8 @@ import { useProjects } from 'utils/useProjects'
 import { useUsers } from 'utils/useUsers'
 import { useProjectSearchParams } from './utils'
 import { Row } from 'components/libs'
+import { useDispatch } from 'react-redux'
+import { projectListActions } from './ProjectListSlice'
 export interface User {
     id: number
     name: string
@@ -22,19 +24,30 @@ export interface Project {
     pin: boolean
 }
 
-export const ProjectListScreen = (props: {openProjectModal: () => void}) => {
+export const ProjectListScreen = () => {
     useDocumentTitle('项目列表', false)
 
+    const dispatch = useDispatch()
     // 基本类型，可以放到依赖里，组件状态，可以放到依赖里，非组件状态的对象，绝对不能放到依赖里
     const [param, setParam] = useProjectSearchParams()
-    const { isLoading, error, data: list, retry } = useProjects(useDebounce(param, 200))
+    const {
+        isLoading,
+        error,
+        data: list,
+        retry,
+    } = useProjects(useDebounce(param, 200))
     const { data: users } = useUsers()
-
     return (
         <Container>
             <Row between={true}>
                 <h1>项目列表</h1>
-                <Button onClick={props.openProjectModal}>创建项目</Button>
+                <Button
+                    onClick={() =>
+                        dispatch(projectListActions.openProjectModal())
+                    }
+                >
+                    创建项目
+                </Button>
             </Row>
             <SearchPanel
                 param={param}
@@ -51,7 +64,6 @@ export const ProjectListScreen = (props: {openProjectModal: () => void}) => {
                 dataSource={list || []}
                 users={users || []}
                 loading={isLoading}
-                openProjectModal={props.openProjectModal}
             />
         </Container>
     )
