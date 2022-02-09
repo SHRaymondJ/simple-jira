@@ -1,12 +1,23 @@
 import React from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
-import ProjectListScreen from './screens/project-list'
-
+import { AuthenticatedApp } from './authenticated-app'
+import { useAuth } from './context/AuthContext'
+import UnauthenticatedApp from './screens/unauthenticated-app'
 
 function App() {
-    return <div className="App">
-        <ProjectListScreen></ProjectListScreen>
-    </div>
+    const { user } = useAuth()
+    return (
+        <div className="App">
+            <Router>
+                {user ? (
+                    <AuthenticatedApp></AuthenticatedApp>
+                ) : (
+                    <UnauthenticatedApp></UnauthenticatedApp>
+                )}
+            </Router>
+        </div>
+    )
 }
 
 export default App
