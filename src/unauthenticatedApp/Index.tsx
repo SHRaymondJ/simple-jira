@@ -9,6 +9,7 @@ import left from 'assets/left.svg'
 import right from 'assets/right.svg'
 import { useAsync } from 'utils/useAsync'
 import { useDocumentTitle } from 'utils'
+import { ErrorBox } from 'components/libs'
 
 export const UnauthenticatedApp = () => {
     const [isRegister, setIsRegister] = useState(false)
@@ -22,11 +23,7 @@ export const UnauthenticatedApp = () => {
             <Background />
             <ShadowCard>
                 {isRegister ? <h2>请注册</h2> : <h2>请登录</h2>}
-                {error ? (
-                    <Typography.Text type={'danger'}>
-                        {error.message}
-                    </Typography.Text>
-                ) : null}
+                <ErrorBox error={error}></ErrorBox>
                 {isRegister ? (
                     <RegisterComponent onError={setError} />
                 ) : (

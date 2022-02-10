@@ -6,6 +6,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useEditProjects } from 'utils/useProjects'
 import { Project, User } from './Index'
+import { useProjectModal } from './utils'
 
 interface ListProps extends TableProps<Project> {
     users: User[]
@@ -15,8 +16,9 @@ interface ListProps extends TableProps<Project> {
 
 const List = ({ users, ...props }: ListProps) => {
     const { mutate } = useEditProjects()
+    const { open } = useProjectModal()
     const pinProject = (id: number) => (pin: boolean) =>
-        mutate({ id, pin }).then(props.refresh)
+        mutate({ id, pin })
     const columns = [
         {
             title: <Pin checked={true} disabled={true} />,
@@ -82,11 +84,17 @@ const List = ({ users, ...props }: ListProps) => {
             title: '操作',
             render(value: any, project: Project) {
                 return (
-                    <Dropdown overlay={<Menu>
-                        <Menu.Item key={'edit'}>
-                            <ButtonNoPadding type='link' onClick={props.openProjectModal}>编辑</ButtonNoPadding>
-                        </Menu.Item>
-                    </Menu>}>
+                    <Dropdown
+                        overlay={
+                            <Menu>
+                                <Menu.Item key={'edit'}>
+                                    <ButtonNoPadding type="link" onClick={open}>
+                                        编辑
+                                    </ButtonNoPadding>
+                                </Menu.Item>
+                            </Menu>
+                        }
+                    >
                         <ButtonNoPadding type="link">...</ButtonNoPadding>
                     </Dropdown>
                 )

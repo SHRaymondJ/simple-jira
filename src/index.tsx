@@ -5,7 +5,7 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { DevTools, loadServer } from 'jira-dev-tool'
 import 'antd/dist/antd.less'
-import { AppProviders } from 'context/Index'
+import { AppProviders } from 'context/index'
 
 loadServer(() => {
     ReactDOM.render(
