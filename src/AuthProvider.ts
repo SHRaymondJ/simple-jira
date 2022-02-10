@@ -1,5 +1,6 @@
 import { http } from './utils/http'
 import { User } from 'screens/projectList/Index'
+import { AuthForm } from 'context/AuthContext'
 
 const localStorageKey = '__auth_provider_token__'
 
@@ -11,11 +12,11 @@ export const handleUserResponse = ({ user }: { user: User }) => {
     return user
 }
 
-export const login = (data: { username: string; password: string }) => {
+export const login = (data: AuthForm) => {
     return http('login', { data, method: 'POST' }).then(handleUserResponse)
 }
 
-export const register = (data: { username: string; password: string }) => {
+export const register = (data: AuthForm) => {
     return http('register', { data, method: 'POST' }).then(handleUserResponse)
 }
 
