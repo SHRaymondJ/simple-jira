@@ -25,10 +25,14 @@ export interface Project {
 export const ProjectListScreen = () => {
     useDocumentTitle('项目列表', false)
 
-    const {open} = useProjectModal()
+    const { open } = useProjectModal()
     // 基本类型，可以放到依赖里，组件状态，可以放到依赖里，非组件状态的对象，绝对不能放到依赖里
     const [param, setParam] = useProjectSearchParams()
-    const { isLoading, error, data: list } = useProjects(useDebounce(param, 200))
+    const {
+        isLoading,
+        error,
+        data: list,
+    } = useProjects(useDebounce(param, 200))
     const { data: users } = useUsers()
 
     return (
